@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		// File Layout
+		"rootDir": "./",
+		"outDir": "./dist",
+		"module": "commonjs",
+		"target": "esnext",
+
+		"lib": ["esnext"],
+		"types": ["node"],
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"esModuleInterop": true,
+		"moduleResolution" : "node",
+		// Recommended Options
+		"strict": true,
+		"jsx": "react-jsx",
+		"isolatedModules": true,
+		"noUncheckedSideEffectImports": true,
+		"moduleDetection": "force",
+		"skipLibCheck": true
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["dist", "node_modules"]
+}
