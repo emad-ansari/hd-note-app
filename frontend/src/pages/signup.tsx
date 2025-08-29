@@ -26,6 +26,7 @@ export default function SignUpPage() {
 		setDateOfBirth,
 	} = useAuth();
 
+	console.log('isOpen: ', openOtpPopup)
 	return (
 		<div className="h-screen bg-white">
 			<div className="flex flex-row min-h-screen md:h-screen">
@@ -96,31 +97,20 @@ export default function SignUpPage() {
 								)}
 								{openOtpPopup && (
 									<div className="space-y-6">
-										<div>
-											<OTPInput
-												label="OTP"
-												value={otp}
-												onChange={(e) => {
-													setErrorMessage((prev) => ({
-														...prev,
-														otp: "",
-													}));
+										<OTPInput
+											label="OTP"
+											value={otp}
+											onChange={(e) => {
+												setErrorMessage((prev) => ({
+													...prev,
+													otp: "",
+												}));
 
-													setOtp(e.target.value);
-												}}
-											/>
-											{errorMessage.otp && (
-												<div className="flex flex-row gap-2 items-center text-red-500  px-2 mt-2">
-													<CircleAlert className="w-3 h-3" />
-													<label
-														htmlFor="error-message"
-														className="text-red-500 text-sm"
-													>
-														{errorMessage.otp}
-													</label>
-												</div>
-											)}
-										</div>
+												setOtp(e.target.value);
+											}}
+											errorMessage={errorMessage.otp}
+										/>
+
 										<Button
 											className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
 											onClick={() =>

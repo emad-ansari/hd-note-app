@@ -5,11 +5,12 @@ import { Label } from "./label";
 
 interface OTPInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
-  value: string
+	value: string;
+	errorMessage: string;
 }
 
 export const OTPInput = forwardRef<HTMLInputElement, OTPInputProps>(
-	({ label, className, value, ...props }, ref) => {
+	({ label, className, value, errorMessage, ...props }, ref) => {
 		const [showOTP, setShowOTP] = useState(false);
 		const [isFocused, setIsFocused] = useState(false);
 
@@ -28,7 +29,7 @@ export const OTPInput = forwardRef<HTMLInputElement, OTPInputProps>(
 				<input
 					ref={ref}
 					id={props.id}
-          placeholder="Enter OTP"
+					placeholder="Enter OTP"
 					type={showOTP ? "text" : "password"}
 					value={value}
 					onFocus={(e) => {
@@ -67,6 +68,9 @@ export const OTPInput = forwardRef<HTMLInputElement, OTPInputProps>(
 						<EyeOff className="size-5" />
 					)}
 				</div>
+				{errorMessage && (
+					<p className="text-sm text-red-500">{errorMessage}</p>
+				)}
 			</div>
 		);
 	}

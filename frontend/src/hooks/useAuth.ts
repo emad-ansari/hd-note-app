@@ -65,26 +65,28 @@ export const useAuth = () => {
 			setErrorMessage((prev) => ({ ...prev, date: "" }));
 		}
 
-		if (!otp || isNaN(Number(otp))) {
-			setErrorMessage((prev) => ({
-				...prev,
-				otp: "OTP must be a valid number",
-			}));
-			hasError = true;
-		} else {
-			setErrorMessage((prev) => ({
-				...prev,
-				otp: "",
-			}));
-		}
-
+		console.log("has error: ", hasError);
 		if (hasError) {
 			return;
 		}
 
 		setOpenOtpPopup(true);
 		setLoading(true);
+		console.log("set here: ", openOtpPopup);
 
+		// if (!otp || isNaN(Number(otp))) {
+		// 	setErrorMessage((prev) => ({
+		// 		...prev,
+		// 		otp: "OTP must be a valid number",
+		// 	}));
+		// 	hasError = true;
+		// } else {
+		// 	setErrorMessage((prev) => ({
+		// 		...prev,
+		// 		otp: "",
+		// 	}));
+		// }
+		
 		try {
 			// Here you would typically make an API call to get the OTP
 			// You can now access username, email, and dateOfBirth here.
@@ -103,6 +105,7 @@ export const useAuth = () => {
 			}));
 		} finally {
 			setLoading(false);
+			// setOpenOtpPopup(false);
 		}
 	};
 
