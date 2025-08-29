@@ -1,24 +1,30 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import icon from "@/assets/icon.png";
 import container from "@/assets/container.png";
 
-import { FloatingLabelInput } from "@/components/ui/floating-input";
+import { useAuth } from "@/hooks/useAuth";
 import { DatePickerInput } from "@/components/common/date-input";
 import { OTPInput } from "@/components/ui/otp-input";
 import { Link } from "react-router-dom";
+import { CircleAlert } from "lucide-react";
+import { InputWithLabel } from "@/components/common/custom-input";
 
 export default function SignUpPage() {
-	const [open, setOpen] = useState<boolean>(false);
-	const [formData, setFormData] = useState({
-		name: "Jonas Khanwald",
-		dateOfBirth: "11 December 1997",
-		email: "jonas_kahnwald@gmail.com",
-	});
-
-	const handleInputChange = (field: string, value: string) => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
-	};
+	const {
+		username,
+		email,
+		otp,
+		getOtp,
+		errorMessage,
+		setOtp,
+		setEmail,
+		setUsername,
+		openOtpPopup,
+		setOpenOtpPopup,
+		setErrorMessage,
+		dateOfBirth,
+		setDateOfBirth,
+	} = useAuth();
 
 	return (
 		<div className="h-screen bg-white">
@@ -45,21 +51,86 @@ export default function SignUpPage() {
 							</div>
 
 							<div className="space-y-6">
-								{/* Your Name */}
+								<InputWithLabel
+									label="Your Name"
+									placeholder="Jhon Doe"
+									value={username}
+									errorMessage={errorMessage.username}
+									onChange={(e) => {
+										setErrorMessage((prev) => ({
+											...prev,
+											username: "",
+										}));
+										setUsername(e.target.value);
+									}}
+								/>
 
-								<FloatingLabelInput label="Your Name" />
-								<DatePickerInput />
-								<FloatingLabelInput label="Email" />
+								<DatePickerInput
+									value={dateOfBirth}
+									onChange={setDateOfBirth}
+									errorMessage={errorMessage.date}
+								/>
+
+								<InputWithLabel
+									label="Email"
+									value={email}
+									placeholder="jonas_kahnwald@gmail.com"
+									errorMessage={errorMessage.email}
+									onChange={(e) => {
+										setErrorMessage((prev) => ({
+											...prev,
+											email: "",
+										}));
+										setEmail(e.target.value);
+									}}
+								/>
 
 								{/* Get OTP Button */}
-								{open && <OTPInput label="OTP" />}
+								{!openOtpPopup && (
+									<Button
+										className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
+										onClick={() => getOtp()}
+									>
+										Get OTP
+									</Button>
+								)}
+								{openOtpPopup && (
+									<div className="space-y-6">
+										<div>
+											<OTPInput
+												label="OTP"
+												value={otp}
+												onChange={(e) => {
+													setErrorMessage((prev) => ({
+														...prev,
+														otp: "",
+													}));
 
-								<Button className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base" onClick={() => setOpen((prev) => !prev)}>
-									{
-										open ? "Sign up" :"Get OTP"
-									}
-									
-								</Button>
+													setOtp(e.target.value);
+												}}
+											/>
+											{errorMessage.otp && (
+												<div className="flex flex-row gap-2 items-center text-red-500  px-2 mt-2">
+													<CircleAlert className="w-3 h-3" />
+													<label
+														htmlFor="error-message"
+														className="text-red-500 text-sm"
+													>
+														{errorMessage.otp}
+													</label>
+												</div>
+											)}
+										</div>
+										<Button
+											className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
+											onClick={() =>
+												setOpenOtpPopup((prev) => !prev)
+											}
+										>
+											Sign up
+										</Button>
+									</div>
+								)}
 
 								{/* Sign in link */}
 								<div className="text-center">

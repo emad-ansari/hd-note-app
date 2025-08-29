@@ -14,6 +14,12 @@ import {
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 
+interface DatePickerInputProps {
+	value: Date | undefined;
+	onChange: (date: Date | undefined) => void;
+	errorMessage: string;
+}
+
 function formatDate(date: Date | undefined) {
 	if (!date) {
 		return "";
@@ -34,34 +40,24 @@ function isValidDate(date: Date | undefined) {
 	return !isNaN(date.getTime());
 }
 
-export function DatePickerInput() {
+export const DatePickerInput: React.FC<DatePickerInputProps> = ({
+	value,
+	onChange,
+	errorMessage,
+}) => {
 	const [open, setOpen] = React.useState(false);
-	const [date, setDate] = React.useState<Date | undefined>(
-		new Date("2025-06-01")
-	);
-	const [month, setMonth] = React.useState<Date | undefined>(date);
-	const [value, setValue] = React.useState(formatDate(date));
-
-	// State for floating label logic
+	const [month, setMonth] = React.useState<Date | undefined>(value);
 	const [isFocused, setIsFocused] = React.useState(false);
-	const hasValue = value !== undefined && value !== "";
-	const isFloating = isFocused || hasValue;
 
 	return (
-		<div className="flex flex-col gap-3">
-			{/* The label is now placed outside the relative div to be directly floating */}
-			{/* However, for Shadcn's Label and Input, we typically handle the floating effect
-          directly on the label that's next to the input. We'll simulate that here. */}
+		<div className="flex flex-col gap-1">
 			<div className="relative">
-				{/* Floating Label */}
 				<Label
-					htmlFor="date" // Associate label with the input
+					htmlFor="date"
 					className={cn(
-						"absolute bg-background text-gray-500 transition-all duration-200 ease-in-out pointer-events-none px-1",
-						isFloating
-							? "left-3 -top-2 text-xs text-[#969696]" // Floating state (blue when floating/focused)
-							: "left-10 top-1/2 -translate-y-1/2 text-base text-gray-400", // Resting state (aligned with input text)
-						isFocused && "text-blue-500" // Ensure text is blue when focused
+						"absolute -top-2 left-3 px-1 text-xs transition-colors duration-200",
+						"bg-background", // so it overlaps the border cleanly
+						isFocused ? "text-blue-500" : "text-[#969696]"
 					)}
 				>
 					Date of Birth
@@ -69,43 +65,24 @@ export function DatePickerInput() {
 
 				<Input
 					id="date"
-					value={value}
-					placeholder={isFloating ? "" : "June 01, 2025"} // Hide placeholder when label is floating
-					// Maintain left padding for the icon
+					value={formatDate(value)}
+					placeholder="01 June 2025"
+					readOnly
 					className={cn(
-						"bg-background pl-12 pr-3 py-3 text-base border border-gray-200 rounded-lg h-12",
-						"transition-all duration-200 ease-in-out",
-						"focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
-						// Apply blue border/ring when focused
-						isFocused && "border-blue-500 ring-1 ring-blue-500"
+						"bg-background pl-12 pr-3 py-3 text-base border rounded-lg h-12",
+						"transition-colors duration-200",
+						isFocused
+							? "border-blue-500 ring-1 ring-blue-500"
+							: "border-gray-300"
 					)}
-					onFocus={(e) => {
+					onFocus={() => {
 						setIsFocused(true);
-						// Open popover on focus
 						setOpen(true);
 					}}
-					onBlur={(e) => {
-						// Keep focus state true if popover is open
-						// This prevents the label from dropping down if the user clicks the calendar
+					onBlur={() => {
 						setTimeout(() => {
-							if (!open) {
-								setIsFocused(false);
-							}
+							if (!open) setIsFocused(false);
 						}, 100);
-					}}
-					onChange={(e) => {
-						const date = new Date(e.target.value);
-						setValue(e.target.value);
-						if (isValidDate(date)) {
-							setDate(date);
-							setMonth(date);
-						}
-					}}
-					onKeyDown={(e) => {
-						if (e.key === "ArrowDown") {
-							e.preventDefault();
-							setOpen(true);
-						}
 					}}
 				/>
 
@@ -113,12 +90,10 @@ export function DatePickerInput() {
 					open={open}
 					onOpenChange={(newOpenState) => {
 						setOpen(newOpenState);
-						// If popover closes, and input is not focused, reset focus state
 						if (
 							!newOpenState &&
 							!document.activeElement?.id.includes("date")
 						) {
-							// Check if input itself is not focused
 							setIsFocused(false);
 						}
 					}}
@@ -142,20 +117,22 @@ export function DatePickerInput() {
 					>
 						<Calendar
 							mode="single"
-							selected={date}
+							selected={value ?? undefined}
 							captionLayout="dropdown"
 							month={month}
 							onMonthChange={setMonth}
 							onSelect={(date) => {
-								setDate(date);
-								setValue(formatDate(date));
+								onChange(date ?? undefined);
 								setOpen(false);
-								setIsFocused(false); // Reset focus after selecting date
+								setIsFocused(false);
 							}}
 						/>
 					</PopoverContent>
 				</Popover>
 			</div>
+			{errorMessage && (
+				<p className="text-sm text-red-500">{errorMessage}</p>
+			)}
 		</div>
 	);
-}
+};

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import icon from "@/assets/icon.png";
 import container from "@/assets/container.png";
-import { FloatingLabelInput } from "@/components/ui/floating-input";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { OTPInput } from "@/components/ui/otp-input";
 import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
+import { InputWithLabel } from "@/components/common/custom-input";
 
 export default function SignInPage() {
 	const navigate = useNavigate();
@@ -46,7 +47,13 @@ export default function SignInPage() {
 
 							<div className="space-y-6">
 								{/* Your Name */}
-								<FloatingLabelInput label="Email" />
+								<InputWithLabel
+									label="Email"
+									// value = {email}
+									placeholder="jonas_kahnwald@gmail.com"
+									errorMessage={""}
+									// onChange={(e) => setEmail(e.target.value)}
+								/>
 
 								{/* Get OTP Button */}
 								<OTPInput label="OTP" />
