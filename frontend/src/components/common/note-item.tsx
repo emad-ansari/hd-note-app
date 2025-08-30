@@ -1,19 +1,32 @@
 import { Trash2 } from "lucide-react"
+import type { Note } from "@/hooks/useNotes"
 
 type NoteItemProps = {
-  title: string
+  note: Note
   onDelete?: () => void
+  onClick?: () => void
 }
 
-export function NoteItem({ title, onDelete }: NoteItemProps) {
+export function NoteItem({ note, onDelete, onClick }: NoteItemProps) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-      <p className="text-gray-800">{title}</p>
+    <div 
+      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      onClick={onClick}
+    >
+      <div className="flex-1">
+        <p className="text-gray-800 font-medium">{note.title}</p>
+        <p className="text-sm text-gray-500 mt-1">
+          {new Date(note.updatedAt).toLocaleDateString()}
+        </p>
+      </div>
       <button
         type="button"
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation()
+          onDelete?.()
+        }}
         className="rounded p-1 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-        aria-label={`Delete ${title}`}
+        aria-label={`Delete ${note.title}`}
       >
         <Trash2 className="h-5 w-5" />
       </button>
