@@ -8,6 +8,7 @@ import { useCreateNote } from "@/hooks/useCreateNote";
 import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 import {
 	Dialog,
@@ -58,18 +59,23 @@ export default function DashboardPage() {
 		if (result.success) {
 			// Reset form after successful creation
 			resetForm()
+			toast.success("Note created successfully!");
 		} else {
 			// You could add toast notification here
 			const errorMessage = 'error' in result ? result.error : 'Unknown error'
 			console.error('Failed to create note:', errorMessage)
+			toast.error(`Failed to create note: ${errorMessage}`);
 		}
 	}
 
 	const handleDeleteNote = async (id: string) => {
 		const result = await deleteNote(id)
-		if (!result.success) {
+		if (result.success) {
+			toast.success("Note deleted successfully!");
+		} else {
 			// You could add toast notification here
 			console.error('Failed to delete note:', result.error)
+			toast.error(`Failed to delete note: ${result.error || 'Unknown error'}`);
 		}
 	}
 
@@ -82,7 +88,12 @@ export default function DashboardPage() {
 	}
 
 	const handleLogout = async () => {
-		await logout()
+		try {
+			await logout()
+			toast.success("Logged out successfully!");
+		} catch (error) {
+			toast.error("Logout failed. Please try again.");
+		}
 	}
 
 	// Show loading state while profile is loading
@@ -186,7 +197,7 @@ export default function DashboardPage() {
 										type="button"
 										className="
 											h-12 w-full rounded-lg 
-											bg-blue-600 text-white 
+											bg-[#367AFF] text-white 
 											font-medium 
 											hover:bg-blue-700 
 											transition-colors
@@ -233,7 +244,7 @@ export default function DashboardPage() {
 												<Button 
 													onClick={handleCreateNote} 
 													disabled={createLoading}
-													className="w-full mt-3 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+													className="w-full mt-3 bg-[#367AFF] text-white hover:bg-blue-500 disabled:opacity-50"
 												>
 													{createLoading ? 'Creating...' : 'Add Note'}
 												</Button>

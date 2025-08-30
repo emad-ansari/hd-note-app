@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import icon from "@/assets/icon.png";
 import container from "@/assets/container.png";
+import { toast } from "react-toastify";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { OTPInput } from "@/components/ui/otp-input";
@@ -36,6 +37,7 @@ export default function SignInPage() {
 	const handleGetOtp = async () => {
 		if (!formData.email) {
 			setLoginError("Please enter your email");
+			toast.error("Please enter your email");
 			return;
 		}
 
@@ -44,6 +46,7 @@ export default function SignInPage() {
 			if (response.success) {
 				setShowOtpInput(true);
 				setLoginError("");
+				toast.success("Login OTP sent! Check your email.");
 			} else {
 				// Show more specific error messages
 				let errorMessage = response.message || "Failed to send OTP";
@@ -56,28 +59,34 @@ export default function SignInPage() {
 				}
 				
 				setLoginError(errorMessage);
+				toast.error(errorMessage);
 			}
 		} catch (error) {
 			setLoginError("Failed to send OTP. Please try again.");
+			toast.error("Failed to send OTP. Please try again.");
 		}
 	};
 
 	const handleSignIn = async () => {
 		if (!formData.otp || formData.otp.length !== 6) {
 			setLoginError("Please enter a valid 6-digit OTP");
+			toast.error("Please enter a valid 6-digit OTP");
 			return;
 		}
 
 		try {
 			const response = await verifyLoginOtp(formData.email, formData.otp);
 			if (response.success) {
+				toast.success("Login successful! Welcome back!");
 				// Redirect to dashboard on success
 				navigate('/dashboard');
 			} else {
 				setLoginError(response.message || "OTP verification failed");
+				toast.error(response.message || "OTP verification failed");
 			}
 		} catch (error) {
 			setLoginError("Failed to verify OTP. Please try again.");
+			toast.error("Failed to verify OTP. Please try again.");
 		}
 	};
 
@@ -85,15 +94,13 @@ export default function SignInPage() {
 		<div className="h-screen bg-white">
 			<div className="flex flex-row min-h-screen md:h-screen">
 				<div className="flex w-full md:w-[591px] flex-col  px-1 py-8  md:p-8">
-					{/* Header with HD logo */}
+
 					<div className="flex items-center justify-center md:justify-start gap-2 ">
 						<img src={icon} alt="website-logo" />
 						<span className="text-xl font-semibold text-typography">
 							HD
 						</span>
 					</div>
-
-					{/* Form Content */}
 					<div className="flex-1  md:px-16 py-10 ">
 						<div className="max-w-sm mx-auto md:mx-0">
 							<div className="flex flex-col  items-center md:items-start md:pt-16">
@@ -106,7 +113,7 @@ export default function SignInPage() {
 							</div>
 
 							<div className="space-y-6">
-								{/* Email Input */}
+
 								<InputWithLabel
 									label="Email"
 									value={formData.email}
@@ -115,7 +122,6 @@ export default function SignInPage() {
 									onChange={(e) => handleInputChange("email", e.target.value)}
 								/>
 
-								{/* Get OTP Button */}
 								{!showOtpInput && (
 									<Button
 										className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
@@ -126,7 +132,7 @@ export default function SignInPage() {
 									</Button>
 								)}
 
-								{/* OTP Input */}
+								
 								{showOtpInput && (
 									<OTPInput 
 										label="OTP" 

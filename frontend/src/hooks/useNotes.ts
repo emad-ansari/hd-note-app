@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { apiService } from '@/lib/api'
 
 export interface Note {
@@ -54,18 +55,22 @@ export const useNotes = () => {
           loading: false,
         }))
       } else {
+        const errorMsg = response.message || 'Failed to fetch notes'
         setState(prev => ({
           ...prev,
-          error: response.message || 'Failed to fetch notes',
+          error: errorMsg,
           loading: false,
         }))
+        toast.error(errorMsg);
       }
     } catch (error) {
+      const errorMsg = 'Failed to fetch notes'
       setState(prev => ({
         ...prev,
-        error: 'Failed to fetch notes',
+        error: errorMsg,
         loading: false,
       }))
+      toast.error(errorMsg);
     }
   }, [])
 
@@ -93,20 +98,24 @@ export const useNotes = () => {
         
         return { success: true, note: newNote }
       } else {
+        const errorMsg = response.message || 'Failed to create note'
         setState(prev => ({
           ...prev,
-          error: response.message || 'Failed to create note',
+          error: errorMsg,
           loading: false,
         }))
-        return { success: false, error: response.message }
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg }
       }
     } catch (error) {
+      const errorMsg = 'Failed to create note'
       setState(prev => ({
         ...prev,
-        error: 'Failed to create note',
+        error: errorMsg,
         loading: false,
       }))
-      return { success: false, error: 'Failed to create note' }
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg }
     }
   }, [])
 
@@ -135,22 +144,27 @@ export const useNotes = () => {
           loading: false,
         }))
         
+        toast.success("Note updated successfully!");
         return { success: true, note: updatedNote }
       } else {
+        const errorMsg = response.message || 'Failed to update note'
         setState(prev => ({
           ...prev,
-          error: response.message || 'Failed to update note',
+          error: errorMsg,
           loading: false,
         }))
-        return { success: false, error: response.message }
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg }
       }
     } catch (error) {
+      const errorMsg = 'Failed to update note'
       setState(prev => ({
         ...prev,
-        error: 'Failed to update note',
+        error: errorMsg,
         loading: false,
       }))
-      return { success: false, error: 'Failed to update note' }
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg }
     }
   }, [])
 
@@ -171,20 +185,24 @@ export const useNotes = () => {
         
         return { success: true }
       } else {
+        const errorMsg = response.message || 'Failed to delete note'
         setState(prev => ({
           ...prev,
-          error: response.message || 'Failed to delete note',
+          error: errorMsg,
           loading: false,
         }))
-        return { success: false, error: response.message }
+        toast.error(errorMsg);
+        return { success: false, error: errorMsg }
       }
     } catch (error) {
+      const errorMsg = 'Failed to delete note'
       setState(prev => ({
         ...prev,
-        error: 'Failed to delete note',
+        error: errorMsg,
         loading: false,
       }))
-      return { success: false, error: 'Failed to delete note' }
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg }
     }
   }, [])
 

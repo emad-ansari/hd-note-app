@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { apiService } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const useAuth = () => {
 	const navigate = useNavigate();
@@ -82,12 +83,13 @@ export const useAuth = () => {
 			const response = await apiService.signup({
 				username,
 				email,
-				dateOfBirth: dateOfBirth!.toISOString().split('T')[0], 
+				dateOfBirth: dateOfBirth!.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
 			});
 
 			if (response.success) {
 				setOpenOtpPopup(true);
 				console.log("OTP sent successfully:", response.message);
+				toast.success("OTP sent successfully! Check your email.");
 			} else {
 				// Handle validation errors from backend
 				if (response.errors && response.errors.length > 0) {
@@ -103,6 +105,7 @@ export const useAuth = () => {
 				} else {
 					setErrorMessage(prev => ({ ...prev, email: response.message || 'Failed to send OTP' }));
 				}
+				toast.error(response.message || 'Failed to send OTP');
 			}
 		} catch (error: any) {
 			console.error("GET_OTP_ERROR: ", error);
@@ -110,6 +113,7 @@ export const useAuth = () => {
 				...prev,
 				email: "Failed to send OTP. Please try again.",
 			}));
+			toast.error("Failed to send OTP. Please try again.");
 		} finally {
 			setLoading(false);
 		}
@@ -121,6 +125,7 @@ export const useAuth = () => {
 				...prev,
 				otp: "Please enter a valid 6-digit OTP",
 			}));
+			toast.error("Please enter a valid 6-digit OTP");
 			return;
 		}
 
@@ -136,7 +141,7 @@ export const useAuth = () => {
 					localStorage.setItem('user', JSON.stringify(response.data.user));
 				}
 				
-				console.log("Signup successful:", response.message);
+				toast.success("Email verified successfully! Welcome aboard!");
 				// Redirect to dashboard
 				navigate('/dashboard');
 			} else {
@@ -144,6 +149,7 @@ export const useAuth = () => {
 					...prev,
 					otp: response.message || 'OTP verification failed',
 				}));
+				toast.error(response.message || 'OTP verification failed');
 			}
 		} catch (error: any) {
 			console.error("VERIFY_OTP_ERROR: ", error);
@@ -151,6 +157,7 @@ export const useAuth = () => {
 				...prev,
 				otp: "Failed to verify OTP. Please try again.",
 			}));
+			toast.error("Failed to verify OTP. Please try again.");
 		} finally {
 			setLoading(false);
 		}
@@ -158,20 +165,26 @@ export const useAuth = () => {
 
 	const login = async (loginEmail: string) => {
 		if (!loginEmail || !validateEmail(loginEmail)) {
+			toast.error('Please enter a valid email');
 			return { success: false, message: 'Please enter a valid email' };
 		}
-
+		setLoading(true);
 		try {
 			const response = await apiService.login(loginEmail);
 			return response;
 		} catch (error: any) {
 			console.error("LOGIN_ERROR: ", error);
+			toast.error('Login failed. Please try again.');
 			return { success: false, message: 'Login failed. Please try again.' };
+		}
+		finally {
+			setLoading(false)
 		}
 	};
 
 	const verifyLoginOtp = async (loginEmail: string, loginOtp: string) => {
 		if (!loginOtp || loginOtp.length !== 6) {
+			toast.error('Please enter a valid 6-digit OTP');
 			return { success: false, message: 'Please enter a valid 6-digit OTP' };
 		}
 
@@ -181,12 +194,17 @@ export const useAuth = () => {
 			if (response.success && response.data?.token) {
 				localStorage.setItem('authToken', response.data.token);
 				localStorage.setItem('user', JSON.stringify(response.data.user));
+				toast.success('Login successful! Welcome back!');
 			}
 
 			return response;
 		} catch (error: any) {
 			console.error("VERIFY_LOGIN_OTP_ERROR: ", error);
+			toast.error('OTP verification failed. Please try again.');
 			return { success: false, message: 'OTP verification failed. Please try again.' };
+		}
+		finally {
+			setLoading(false);
 		}
 	};
 
@@ -200,6 +218,7 @@ export const useAuth = () => {
 				localStorage.removeItem('userEmail');
 				localStorage.removeItem('user');
 				
+				toast.success('Logged out successfully!');
 				// Redirect to signin page
 				navigate('/login');
 			} else {
@@ -208,6 +227,7 @@ export const useAuth = () => {
 				localStorage.removeItem('authToken');
 				localStorage.removeItem('userEmail');
 				localStorage.removeItem('user');
+				toast.success('Logged out successfully!');
 				navigate('/login');
 			}
 		} catch (error) {
@@ -216,6 +236,7 @@ export const useAuth = () => {
 			localStorage.removeItem('authToken');
 			localStorage.removeItem('userEmail');
 			localStorage.removeItem('user');
+			toast.success('Logged out successfully!');
 			navigate('/login');
 		} finally {
 			setLoading(false);
