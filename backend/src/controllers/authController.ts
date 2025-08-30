@@ -44,16 +44,12 @@ export const signup = async (req: Request, res: Response) => {
 		// Check if user already exists
 		let user = await User.findOne({ email });
 
-		if (user && user.isEmailVerified) {
-			return res.status(400).json({ message: "User already exists with this email" });
-		}
 
 		if (!user) {
 			user = new User({ 
 				username, 
 				email, 
 				dateOfBirth: new Date(dateOfBirth),
-				isEmailVerified: false
 			});
 		}
 
@@ -117,7 +113,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
 		// Clear OTP and mark email as verified
 		user.otp = undefined;
 		user.otpExpires = undefined;
-		user.isEmailVerified = true;
 		user.lastLogin = new Date();
 		await user.save();
 
@@ -139,8 +134,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
 				id: user._id,
 				username: user.username,
 				email: user.email,
-				dateOfBirth: user.dateOfBirth,
-				isEmailVerified: user.isEmailVerified,
 			},
 		});
 	} catch (error: any) {
@@ -168,10 +161,6 @@ export const login = async (req: Request, res: Response) => {
 
 		if (!user) {
 			return res.status(404).json({ message: "User not found. Please sign up first." });
-		}
-
-		if (!user.isEmailVerified) {
-			return res.status(400).json({ message: "Please verify your email first" });
 		}
 
 		// Generate OTP for login
@@ -221,9 +210,6 @@ export const verifyLoginOtp = async (req: Request, res: Response) => {
 			return res.status(404).json({ message: "User not found" });
 		}
 
-		if (!user.isEmailVerified) {
-			return res.status(400).json({ message: "Please verify your email first" });
-		}
 
 		// Check OTP & expiry
 		if (user.otp !== otp) {
@@ -255,8 +241,6 @@ export const verifyLoginOtp = async (req: Request, res: Response) => {
 				id: user._id,
 				username: user.username,
 				email: user.email,
-				dateOfBirth: user.dateOfBirth,
-				isEmailVerified: user.isEmailVerified,
 			},
 		});
 	} catch (error: any) {
