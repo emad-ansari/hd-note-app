@@ -5,7 +5,7 @@ import container from "@/assets/container.png";
 import { toast } from "react-toastify";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { OTPInput } from "@/components/ui/otp-input";
+import { OTPInput } from "@/components/common/otp-input";
 import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { InputWithLabel } from "@/components/common/custom-input";

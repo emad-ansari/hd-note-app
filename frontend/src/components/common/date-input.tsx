@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 
@@ -28,17 +26,9 @@ function formatDate(date: Date | undefined) {
 	const day = date.getDate().toString().padStart(2, "0"); // Ensures "01" instead of "1"
 	const month = date.toLocaleString("en-US", { month: "long" });
 	const year = date.getFullYear();
-
-	// Construct the string in "Day Month Year" format
 	return `${day} ${month} ${year}`;
 }
 
-function isValidDate(date: Date | undefined) {
-	if (!date) {
-		return false;
-	}
-	return !isNaN(date.getTime());
-}
 
 export const DatePickerInput: React.FC<DatePickerInputProps> = ({
 	value,

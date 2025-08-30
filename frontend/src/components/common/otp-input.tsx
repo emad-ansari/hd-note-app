@@ -1,7 +1,7 @@
 import { useState, forwardRef } from "react";
 import { EyeOff, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Label } from "./label";
+import { Label } from "../ui/label";
 
 interface OTPInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
@@ -16,7 +16,6 @@ export const OTPInput = forwardRef<HTMLInputElement, OTPInputProps>(
 
 		return (
 			<div className="relative w-full">
-				{/* Fixed label on border */}
 				<Label
 					className={cn(
 						"absolute -top-2 left-3 bg-white px-1 text-xs transition-colors duration-200",

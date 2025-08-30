@@ -22,8 +22,6 @@ export function NoteDetails({ note, onBack }: NoteDetailsProps) {
         </Button>
         <h2 className="text-xl font-semibold text-gray-900">Note Details</h2>
       </div>
-
-      {/* Note content */}
       <div className="space-y-4">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">

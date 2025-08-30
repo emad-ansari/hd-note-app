@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import { useAuth } from "@/hooks/useAuth";
 import { DatePickerInput } from "@/components/common/date-input";
-import { OTPInput } from "@/components/ui/otp-input";
+import { OTPInput } from "@/components/common/otp-input";
 import { Link } from "react-router-dom";
 import { InputWithLabel } from "@/components/common/custom-input";
 
