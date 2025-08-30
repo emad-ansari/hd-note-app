@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { apiService } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
+	const navigate = useNavigate();
 	const [openOtpPopup, setOpenOtpPopup] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -27,16 +30,23 @@ export const useAuth = () => {
 	};
 
 	const getOtp = async () => {
-		let hasError = false; // Flag to track if any error occurred
+		let hasError = false;
 
+		// Clear previous errors
+		setErrorMessage({
+			username: "",
+			email: "",
+			date: "",
+			otp: "",
+		});
+
+		// Validation
 		if (!username) {
 			setErrorMessage((prev) => ({
 				...prev,
 				username: "Username is required",
 			}));
 			hasError = true;
-		} else {
-			setErrorMessage((prev) => ({ ...prev, username: "" }));
 		}
 
 		if (!email) {
@@ -51,8 +61,6 @@ export const useAuth = () => {
 				email: "Invalid email address",
 			}));
 			hasError = true;
-		} else {
-			setErrorMessage((prev) => ({ ...prev, email: "" }));
 		}
 
 		if (!dateOfBirth) {
@@ -61,52 +69,147 @@ export const useAuth = () => {
 				date: "Date of Birth is required",
 			}));
 			hasError = true;
-		} else {
-			setErrorMessage((prev) => ({ ...prev, date: "" }));
 		}
 
-		console.log("has error: ", hasError);
 		if (hasError) {
 			return;
 		}
 
-		setOpenOtpPopup(true);
 		setLoading(true);
-		console.log("set here: ", openOtpPopup);
 
-		// if (!otp || isNaN(Number(otp))) {
-		// 	setErrorMessage((prev) => ({
-		// 		...prev,
-		// 		otp: "OTP must be a valid number",
-		// 	}));
-		// 	hasError = true;
-		// } else {
-		// 	setErrorMessage((prev) => ({
-		// 		...prev,
-		// 		otp: "",
-		// 	}));
-		// }
-		
 		try {
-			// Here you would typically make an API call to get the OTP
-			// You can now access username, email, and dateOfBirth here.
-			console.log("Sending OTP for:", { username, email, dateOfBirth });
+			// Call backend API to request OTP
+			const response = await apiService.signup({
+				username,
+				email,
+				dateOfBirth: dateOfBirth!.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
+			});
 
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-
-			// Assuming OTP is received, you might set it here
-			// setOtp(123456);
+			if (response.success) {
+				setOpenOtpPopup(true);
+				console.log("OTP sent successfully:", response.message);
+			} else {
+				// Handle validation errors from backend
+				if (response.errors && response.errors.length > 0) {
+					response.errors.forEach((error: any) => {
+						if (error.field === 'username') {
+							setErrorMessage(prev => ({ ...prev, username: error.message }));
+						} else if (error.field === 'email') {
+							setErrorMessage(prev => ({ ...prev, email: error.message }));
+						} else if (error.field === 'dateOfBirth') {
+							setErrorMessage(prev => ({ ...prev, date: error.message }));
+						}
+					});
+				} else {
+					setErrorMessage(prev => ({ ...prev, email: response.message || 'Failed to send OTP' }));
+				}
+			}
 		} catch (error: any) {
-			console.error("GET_OTP_ERROR: ", error.message);
+			console.error("GET_OTP_ERROR: ", error);
 			setErrorMessage((prev) => ({
 				...prev,
-				otp: "Failed to send OTP. Please try again.",
+				email: "Failed to send OTP. Please try again.",
 			}));
 		} finally {
 			setLoading(false);
-			// setOpenOtpPopup(false);
 		}
+	};
+
+	const verifyOtp = async () => {
+		if (!otp || otp.length !== 6) {
+			setErrorMessage((prev) => ({
+				...prev,
+				otp: "Please enter a valid 6-digit OTP",
+			}));
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			const response = await apiService.verifyOtp(email, otp);
+
+			if (response.success) {
+				// Store the token
+				if (response.data?.token) {
+					localStorage.setItem('authToken', response.data.token);
+					localStorage.setItem('user', JSON.stringify(response.data.user));
+				}
+				
+				console.log("Signup successful:", response.message);
+				// Redirect to dashboard
+				navigate('/dashboard');
+			} else {
+				setErrorMessage((prev) => ({
+					...prev,
+					otp: response.message || 'OTP verification failed',
+				}));
+			}
+		} catch (error: any) {
+			console.error("VERIFY_OTP_ERROR: ", error);
+			setErrorMessage((prev) => ({
+				...prev,
+				otp: "Failed to verify OTP. Please try again.",
+			}));
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const login = async (loginEmail: string) => {
+		if (!loginEmail || !validateEmail(loginEmail)) {
+			return { success: false, message: 'Please enter a valid email' };
+		}
+
+		try {
+			const response = await apiService.login(loginEmail);
+			return response;
+		} catch (error: any) {
+			console.error("LOGIN_ERROR: ", error);
+			return { success: false, message: 'Login failed. Please try again.' };
+		}
+	};
+
+	const verifyLoginOtp = async (loginEmail: string, loginOtp: string) => {
+		if (!loginOtp || loginOtp.length !== 6) {
+			return { success: false, message: 'Please enter a valid 6-digit OTP' };
+		}
+
+		try {
+			const response = await apiService.verifyLoginOtp(loginEmail, loginOtp);
+
+			if (response.success && response.data?.token) {
+				localStorage.setItem('authToken', response.data.token);
+				localStorage.setItem('user', JSON.stringify(response.data.user));
+			}
+
+			return response;
+		} catch (error: any) {
+			console.error("VERIFY_LOGIN_OTP_ERROR: ", error);
+			return { success: false, message: 'OTP verification failed. Please try again.' };
+		}
+	};
+
+	const logout = async () => {
+		try {
+			await apiService.logout();
+		} catch (error) {
+			console.error("LOGOUT_ERROR: ", error);
+		} finally {
+			// Clear local storage regardless of API call success
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('user');
+			navigate('/');
+		}
+	};
+
+	const isAuthenticated = () => {
+		return !!localStorage.getItem('authToken');
+	};
+
+	const getCurrentUser = () => {
+		const userStr = localStorage.getItem('user');
+		return userStr ? JSON.parse(userStr) : null;
 	};
 
 	return {
@@ -114,6 +217,10 @@ export const useAuth = () => {
 		email,
 		otp,
 		getOtp,
+		verifyOtp,
+		login,
+		verifyLoginOtp,
+		logout,
 		errorMessage,
 		setUsername,
 		setEmail,
@@ -123,6 +230,8 @@ export const useAuth = () => {
 		loading,
 		setErrorMessage,
 		dateOfBirth,
-		setDateOfBirth, // Make setDateOfBirth available
+		setDateOfBirth,
+		isAuthenticated,
+		getCurrentUser,
 	};
 };
