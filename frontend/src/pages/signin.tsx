@@ -8,17 +8,67 @@ import { OTPInput } from "@/components/ui/otp-input";
 import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { InputWithLabel } from "@/components/common/custom-input";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SignInPage() {
 	const navigate = useNavigate();
+	const {
+		login,
+		verifyLoginOtp,
+		loading,
+	} = useAuth();
+
 	const [formData, setFormData] = useState({
-		name: "Jonas Khanwald",
-		dateOfBirth: "11 December 1997",
-		email: "jonas_kahnwald@gmail.com",
+		email: "",
+		otp: "",
 	});
+	const [showOtpInput, setShowOtpInput] = useState(false);
+	const [loginError, setLoginError] = useState("");
 
 	const handleInputChange = (field: string, value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
+		// Clear errors when user types
+		if (field === 'email') {
+			setLoginError("");
+		}
+	};
+
+	const handleGetOtp = async () => {
+		if (!formData.email) {
+			setLoginError("Please enter your email");
+			return;
+		}
+
+		try {
+			const response = await login(formData.email);
+			if (response.success) {
+				setShowOtpInput(true);
+				setLoginError("");
+			} else {
+				setLoginError(response.message || "Failed to send OTP");
+			}
+		} catch (error) {
+			setLoginError("Failed to send OTP. Please try again.");
+		}
+	};
+
+	const handleSignIn = async () => {
+		if (!formData.otp || formData.otp.length !== 6) {
+			setLoginError("Please enter a valid 6-digit OTP");
+			return;
+		}
+
+		try {
+			const response = await verifyLoginOtp(formData.email, formData.otp);
+			if (response.success) {
+				// Redirect to dashboard on success
+				navigate('/dashboard');
+			} else {
+				setLoginError(response.message || "OTP verification failed");
+			}
+		} catch (error) {
+			setLoginError("Failed to verify OTP. Please try again.");
+		}
 	};
 
 	return (
@@ -46,25 +96,46 @@ export default function SignInPage() {
 							</div>
 
 							<div className="space-y-6">
-								{/* Your Name */}
+								{/* Email Input */}
 								<InputWithLabel
 									label="Email"
-									// value = {email}
+									value={formData.email}
 									placeholder="jonas_kahnwald@gmail.com"
-									errorMessage={""}
-									// onChange={(e) => setEmail(e.target.value)}
+									errorMessage={loginError}
+									onChange={(e) => handleInputChange("email", e.target.value)}
 								/>
 
 								{/* Get OTP Button */}
-								<OTPInput label="OTP" />
+								{!showOtpInput && (
+									<Button
+										className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
+										onClick={handleGetOtp}
+										disabled={loading}
+									>
+										{loading ? "Sending OTP..." : "Get OTP"}
+									</Button>
+								)}
+
+								{/* OTP Input */}
+								{showOtpInput && (
+									<OTPInput 
+										label="OTP" 
+										value={formData.otp}
+										onChange={(e) => handleInputChange("otp", e.target.value)}
+										errorMessage={loginError}
+									/>
+								)}
 
 								<div className="flex flex-col gap-3">
-									<Link
-										to="#"
-										className="text-blue-500 text-sm font-medium hover:underline"
-									>
-										Resent OTP
-									</Link>
+									{showOtpInput && (
+										<Button
+											onClick={handleGetOtp}
+											className="text-blue-500 text-sm font-medium hover:underline bg-transparent p-0 h-auto"
+											disabled={loading}
+										>
+											Resend OTP
+										</Button>
+									)}
                                     <div className="flex gap-2 ">
     									<Checkbox className="w-5 h-5 text-[#232323]"/>
                                         <Label >Keep me logged in</Label>
@@ -72,12 +143,15 @@ export default function SignInPage() {
 								</div>
 
 								<div className="flex flex-col gap-7">
-									<Button
-										className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
-										onClick={() => navigate('/dashboard')}
-									>
-										Sign In
-									</Button>
+									{showOtpInput && (
+										<Button
+											className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
+											onClick={handleSignIn}
+											disabled={loading}
+										>
+											{loading ? "Signing In..." : "Sign In"}
+										</Button>
+									)}
 									<div className="flex gap-1 justify-center text-center">
 										<span className="text-gray-500 text-sm">
 											Need an account?
@@ -102,8 +176,6 @@ export default function SignInPage() {
 					/>
 				</div>
 			</div>
-
-			{/* Mobile home indicator */}
 		</div>
 	);
 }
