@@ -15,6 +15,7 @@ export default function SignUpPage() {
 		email,
 		otp,
 		getOtp,
+		verifyOtp,
 		errorMessage,
 		setOtp,
 		setEmail,
@@ -24,9 +25,9 @@ export default function SignUpPage() {
 		setErrorMessage,
 		dateOfBirth,
 		setDateOfBirth,
+		loading,
 	} = useAuth();
 
-	console.log('isOpen: ', openOtpPopup)
 	return (
 		<div className="h-screen bg-white">
 			<div className="flex flex-row min-h-screen md:h-screen">
@@ -91,10 +92,12 @@ export default function SignUpPage() {
 									<Button
 										className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
 										onClick={() => getOtp()}
+										disabled={loading}
 									>
-										Get OTP
+										{loading ? "Sending OTP..." : "Get OTP"}
 									</Button>
 								)}
+								
 								{openOtpPopup && (
 									<div className="space-y-6">
 										<OTPInput
@@ -105,7 +108,6 @@ export default function SignUpPage() {
 													...prev,
 													otp: "",
 												}));
-
 												setOtp(e.target.value);
 											}}
 											errorMessage={errorMessage.otp}
@@ -113,11 +115,10 @@ export default function SignUpPage() {
 
 										<Button
 											className="w-full bg-[#367AFF] hover:bg-blue-600 text-white py-6 rounded-lg font-medium text-base"
-											onClick={() =>
-												setOpenOtpPopup((prev) => !prev)
-											}
+											onClick={() => verifyOtp()}
+											disabled={loading}
 										>
-											Sign up
+											{loading ? "Verifying..." : "Sign up"}
 										</Button>
 									</div>
 								)}
@@ -146,8 +147,6 @@ export default function SignUpPage() {
 					/>
 				</div>
 			</div>
-
-			{/* Mobile home indicator */}
 		</div>
 	);
 }
