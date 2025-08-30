@@ -1,10 +1,10 @@
-let API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-if (import.meta.env.VITE_ENV === "development") {
-	API_BASE_URL = import.meta.env.VITE_LOCALHOST_URL;
-} else {
-	API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-}
+// if (import.meta.env.VITE_ENV === "development") {
+// 	API_BASE_URL = import.meta.env.VITE_LOCALHOST_URL;
+// } else {
+// 	API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// }
 
 interface ApiResponse<T = any> {
   success: boolean;
