@@ -1,37 +1,35 @@
-📒 Full Stack Note-Taking Application
+# 📒 Full Stack Note-Taking Application
 
-A full-stack note-taking application built with React (TypeScript), Express (TypeScript), and MongoDB Atlas.
-Users can sign up and log in using Email + OTP authentication, and once logged in, they can create and delete personal notes securely with JWT authentication.
+A full-stack **note-taking application** built with **React (TypeScript), Express (TypeScript), and MongoDB Atlas**.
+Users can sign up and log in using **Email + OTP authentication**, and once logged in, they can **create and delete personal notes** securely with **JWT authentication**.
 
-🚀 Features
+---
 
-🔐 User Authentication
+## 🚀 Features
 
-Sign up using Email + OTP verification
+* 🔐 **User Authentication**
 
-Secure JWT-based login & authorization
+  * Sign up using **Email + OTP verification**
+  * Secure **JWT-based login & authorization**
+* 📝 **Notes Management**
 
-📝 Notes Management
+  * Create personal notes
+  * Delete notes
+* 📱 **Responsive UI**
 
-Create personal notes
+  * Mobile-friendly design closely following the provided assignment design
+* ⚡ **Tech Stack**
 
-Delete notes
+  * **Frontend**: React (TypeScript), TailwindCSS, shadcn/ui
+  * **Backend**: Express (TypeScript), JWT, Zod, MongoDB Atlas
+  * **Database**: MongoDB Atlas (Cloud)
+  * **Version Control**: Git & GitHub
 
-📱 Responsive UI
+---
 
-Mobile-friendly design closely following the provided assignment design
+## 📂 Project Structure
 
-⚡ Tech Stack
-
-Frontend: React (TypeScript), TailwindCSS, shadcn/ui
-
-Backend: Express (TypeScript), JWT, MongoDB Atlas
-
-Database: MongoDB Atlas (Cloud)
-
-Version Control: Git & GitHub
-
-📂 Project Structure
+```bash
 ├── frontend/          # React (TypeScript) client
 │   ├── src/
 │   │   ├── components/ # Reusable UI components
@@ -48,70 +46,108 @@ Version Control: Git & GitHub
 │   └── ...
 │
 └── README.md
+```
 
-⚙️ Setup Instructions
-1️⃣ Clone Repository
-git clone git@github.com:emad-ansari/hd-note-app.git
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/emad-ansari/hd-note-app.git
 cd note-app
+```
 
-2️⃣ Setup Backend
+### 2️⃣ Setup Backend
+
+```bash
 cd backend
 npm install
+```
 
+Create a `.env` file in the **backend** folder:
 
-Create a .env file in the backend folder:
-
-PORT=5000
+```env
+PORT=4000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
-
+```
 
 Start the backend server:
 
+```bash
 npm run dev
+```
 
-3️⃣ Setup Frontend
+### 3️⃣ Setup Frontend
+
+```bash
 cd frontend
 npm install
-
+```
 
 Start the frontend development server:
 
+```bash
 npm run dev
+```
 
-4️⃣ Access App
+### 4️⃣ Access App
 
-Open http://localhost:5173
- in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-🖼️ Screenshots
+---
+
+## 🖼️ Screenshots
 
 👉 Replace placeholders below with your actual screenshots.
 
-🔹 Signup Page
+### 🔹 Signup Page
 
-🔹 Login Page
+![Signup Page](./frontend/public/signup.png)
 
-🔹 Dashboard
+### 🔹 Login Page
 
-🔑 Authentication Flow
+![Login Page](./frontend/public/signin.png)
 
-User enters email, username, and date of birth
+### 🔹 Dashboard
 
-OTP is sent via backend (mock / email service)
+![Dashboard](./frontend/public/dashboard.png)
 
-On verification, user is stored in MongoDB
+### 🔹 Note Detail
 
-On login, server issues a JWT token
+![Dashboard](./frontend/public/note-detail.png)
 
-JWT is used to authorize create & delete notes requests
+---
 
-🌐 Deployment
+## 🔑 Authentication Flow
 
-Frontend: [Vercel]
+1. User enters **email, username, and date of birth**
+2. OTP is sent via backend (mock / email service)
+3. On verification, user is stored in **MongoDB**
+4. On login, server issues a **JWT token**
+5. JWT is used to authorize **create & delete notes** requests
 
-Backend: [Vercel]
+---
 
-Database: MongoDB Atlas (Cloud)
+## 🌐 Deployment
 
-Live Demo: https://hd-note-app-rosy.vercel.app/
+* **Frontend**: Vercel
+* **Backend**: Vercel
+* **Database**: MongoDB Atlas (Cloud)
+
+Live Demo: [https://hd-note-app-rosy.vercel.app/](https://hd-note-app-rosy.vercel.app/)
+
+---
+
+## 📌 Assignment Notes
+
+* Completed within **3 days** as required
+* Each feature committed step by step
+* Supports **Email + OTP Authentication** (Google Sign-In skipped as per option)
+* JWT used for secure note operations
+
+---
+
+👉 Do you want me to also **add instructions for running with Docker** (optional but looks professional in README), or keep it simple for your assignment?
