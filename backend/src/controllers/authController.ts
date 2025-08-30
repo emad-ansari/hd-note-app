@@ -189,7 +189,7 @@ export const login = async (req: Request, res: Response) => {
 	}
 };
 
-// 📌 Verify login OTP
+// verify otp
 export const verifyLoginOtp = async (req: Request, res: Response) => {
 	try {
 		// Validate input

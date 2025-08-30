@@ -15,8 +15,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
+const allowedOrigins = [
+	"https://hd-note-app-gamma.vercel.app",
+	"http://localhost:5173",
+];
+
 app.use(cors({ 
-	origin: process.env.FRONTEND_URL || "http://localhost:5173", 
+	origin: allowedOrigins,
+	methods: ["GET", "POST", "PUT", "DELETE"],
+	allowedHeaders: ["Content-Type", "Authorization"],
 	credentials: true 
 }));
 app.use(cookieParser());
@@ -47,15 +54,20 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
 	});
 });
 
+
+connectDB();
 // Connect to database and start server
-connectDB().then(() => {
-	app.listen(PORT, () => {
-		console.log(`🚀 Server running on http://localhost:${PORT}`);
-		console.log(`📧 Email service: ${process.env.EMAIL_USER ? 'Configured' : 'Not configured'}`);
-		console.log(`🔐 JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Using default'}`);
-		console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-	});
-}).catch((error) => {
-	console.error("❌ Failed to start server:", error);
-	process.exit(1);
-});
+// connectDB().then(() => {
+// 	app.listen(PORT, () => {
+// 		console.log(`🚀 Server running on http://localhost:${PORT}`);
+// 		console.log(`📧 Email service: ${process.env.EMAIL_USER ? 'Configured' : 'Not configured'}`);
+// 		console.log(`🔐 JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Using default'}`);
+// 		console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+// 	});
+// }).catch((error) => {
+// 	console.error("❌ Failed to start server:", error);
+// 	process.exit(1);
+// });
+
+
+export default app;
