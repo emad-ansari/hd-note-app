@@ -45,7 +45,17 @@ export default function SignInPage() {
 				setShowOtpInput(true);
 				setLoginError("");
 			} else {
-				setLoginError(response.message || "Failed to send OTP");
+				// Show more specific error messages
+				let errorMessage = response.message || "Failed to send OTP";
+				
+				// Provide helpful guidance based on error
+				if (response.message?.includes("not found")) {
+					errorMessage = "No account found with this email. Please sign up first.";
+				} else if (response.message?.includes("verify your email")) {
+					errorMessage = "Please complete your signup by verifying your email first.";
+				}
+				
+				setLoginError(errorMessage);
 			}
 		} catch (error) {
 			setLoginError("Failed to send OTP. Please try again.");
