@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { apiService } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 
@@ -82,7 +82,7 @@ export const useAuth = () => {
 			const response = await apiService.signup({
 				username,
 				email,
-				dateOfBirth: dateOfBirth!.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
+				dateOfBirth: dateOfBirth!.toISOString().split('T')[0], 
 			});
 
 			if (response.success) {
@@ -190,18 +190,37 @@ export const useAuth = () => {
 		}
 	};
 
-	const logout = async () => {
+	const logout = useCallback(async () => {
+		setLoading(true);
 		try {
-			await apiService.logout();
+			const response = await apiService.logout();
+			if (response.success) {
+				// Clear local storage
+				localStorage.removeItem('authToken');
+				localStorage.removeItem('userEmail');
+				localStorage.removeItem('user');
+				
+				// Redirect to signin page
+				navigate('/login');
+			} else {
+				console.error('Logout failed:', response.message);
+				// Even if logout fails on backend, clear local storage
+				localStorage.removeItem('authToken');
+				localStorage.removeItem('userEmail');
+				localStorage.removeItem('user');
+				navigate('/login');
+			}
 		} catch (error) {
-			console.error("LOGOUT_ERROR: ", error);
-		} finally {
-			// Clear local storage regardless of API call success
+			console.error('Logout error:', error);
+			// Clear local storage on error
 			localStorage.removeItem('authToken');
+			localStorage.removeItem('userEmail');
 			localStorage.removeItem('user');
-			navigate('/');
+			navigate('/login');
+		} finally {
+			setLoading(false);
 		}
-	};
+	}, [navigate]);
 
 	const isAuthenticated = () => {
 		return !!localStorage.getItem('authToken');
