@@ -138,16 +138,3 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 * **Database**: MongoDB Atlas (Cloud)
 
 Live Demo: [https://hd-note-app-rosy.vercel.app/](https://hd-note-app-rosy.vercel.app/)
-
----
-
-## 📌 Assignment Notes
-
-* Completed within **3 days** as required
-* Each feature committed step by step
-* Supports **Email + OTP Authentication** (Google Sign-In skipped as per option)
-* JWT used for secure note operations
-
----
-
-👉 Do you want me to also **add instructions for running with Docker** (optional but looks professional in README), or keep it simple for your assignment?
