@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 const allowedOrigins = [
-	"https://hd-note-app-gamma.vercel.app",
+	"https://hd-note-app-rosy.vercel.app",
 	"http://localhost:5173",
 ];
 
