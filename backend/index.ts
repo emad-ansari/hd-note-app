@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-// Middleware
+// Middlewaren
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 const allowedOrigins = [

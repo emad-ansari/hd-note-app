@@ -1,7 +1,7 @@
 import app from "../index";
-import { Request, Response } from "express";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
-// Vercel expects default export function
-export default (req: Request, res: Response) => {
-  return app(req, res);
+// Vercel expects a default export function
+export default (req: VercelRequest, res: VercelResponse) => {
+  app(req, res); // delegate to Express
 };
